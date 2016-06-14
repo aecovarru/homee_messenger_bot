@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // setup database
 // make sure database accepts SSL connections
-// pg.defaults.ssl = true;
+pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client, done){
   client.query("CREATE TABLE IF NOT EXISTS users (uid bigint PRIMARY KEY UNIQUE NOT NULL, room varchar(20), budget varchar(20), timeline varchar(30), style  varchar(20), image_url varchar(1000), special varchar(2048))");
   client.query("CREATE TABLE IF NOT EXISTS images (iid SERIAL PRIMARY KEY, uid bigint references users(uid), url varchar(1000))");
