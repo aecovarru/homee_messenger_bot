@@ -40,7 +40,7 @@ var welcomeData = {
 
 exports.callWelcomeScreen = function(){
   request({
-    uri: 'https://graph.facebook.com/v2.6/1303906352970309/thread_settings',
+    uri: 'https://graph.facebook.com/v2.6/' + process.env.PAGE_ID + '/thread_settings',
     qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
     method: 'POST',
     json: welcomeData
