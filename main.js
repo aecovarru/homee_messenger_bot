@@ -12,6 +12,10 @@ app.use(bodyParser.json());
 // make sure database accepts SSL connections
 pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client, done){
+  if (err) {
+    console.log('Encountered an error:', err.message);
+    return res.send(500, err.message);
+  }
   client.query("CREATE TABLE IF NOT EXISTS users (uid bigint PRIMARY KEY UNIQUE NOT NULL, room varchar(20), budget varchar(20), timeline varchar(30), style  varchar(20), image_url varchar(1000), special varchar(2048))");
   client.query("CREATE TABLE IF NOT EXISTS images (iid SERIAL PRIMARY KEY, uid bigint references users(uid), url varchar(1000))");
 });
@@ -137,6 +141,10 @@ function receivedPostback(event) {
   var payload = event.postback.payload;
   if (payload === 'Start Chatting'){
     pg.connect(process.env.DATABASE_URL, function(err, client, done){
+      if (err) {
+        console.log('Encountered an error:', err.message);
+        return res.send(500, err.message);
+      }
       client.query("INSERT INTO users (uid) SELECT ($1) WHERE NOT EXISTS (SELECT uid FROM users WHERE uid = $1)", [senderID]);
     });
     question_index[senderID] = 0;
@@ -160,6 +168,10 @@ function sendTextMessage(recipientId, messageText) {
 function saveAnswer(senderID, messageText){
   var index = question_index[senderID];
   pg.connect(process.env.DATABASE_URL, function(err, client, done){
+    if (err) {
+      console.log('Encountered an error:', err.message);
+      return res.send(500, err.message);
+    }
     switch (index){
       case 0:
         client.query("UPDATE users SET room=$1 WHERE uid=$2", [parse.room(messageText), senderID]);
